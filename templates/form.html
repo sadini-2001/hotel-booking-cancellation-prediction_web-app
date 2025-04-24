@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Cancellation Prediction | BookingGuard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, #4361ee, #3f37c9);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 0.5rem;
+            color: #4cc9f0;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #4cc9f0;
+        }
+
+        /* Main Content Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7ff;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 80px;
+        }
+
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+
+        h2 {
+            text-align: center;
+            color: #4361ee;
+            margin-bottom: 20px;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        .progress-bar {
+            display: flex;
+            margin-bottom: 30px;
+            justify-content: space-between;
+        }
+
+        .progress-bar div {
+            height: 8px;
+            flex: 1;
+            margin: 0 3px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .progress-bar div.active {
+            background-color: #4cc9f0;
+        }
+
+        .form-navigation {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 12px 24px;
+            background-color: #4361ee;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #3f37c9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #4cc9f0;
+            box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.1);
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+        }
+
+        .result-container {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .result-container.success {
+            background-color: rgba(75, 181, 67, 0.1);
+            border: 1px solid #4bb543;
+            color: #4bb543;
+        }
+
+        .result-container.danger {
+            background-color: rgba(230, 57, 70, 0.1);
+            border: 1px solid #e63946;
+            color: #e63946;
+        }
+
+        .recommendations {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #4cc9f0;
+        }
+
+        .recommendations h4 {
+            color: #4361ee;
+            margin-bottom: 15px;
+        }
+
+        .recommendations ul {
+            padding-left: 20px;
+        }
+
+        .recommendations li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            body {
+                padding-top: 70px;
+            }
+            
+            .form-container {
+                padding: 20px;
+                margin: 15px;
+            }
+            
+            .form-group {
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <a href="/" style="color: white; text-decoration: none;">BookingGuard</a>
+                </div>
+                <ul class="nav-links">
+                    
+                    <li><a href="/prediction">New Prediction</a></li>
+		    <li><a href="/dashboard">Dashboard</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="form-container">
+        <h2>Booking Cancellation Prediction</h2>
+        <div class="progress-bar">
+            <div class="step-indicator active"></div>
+            <div class="step-indicator"></div>
+            <div class="step-indicator"></div>
+            <div class="step-indicator"></div>
+        </div>
+        <form id="bookingForm" action="/prediction" method="post">
+            <!-- Step 1 -->
+            <div class="step active">
+                <div class="form-group">
+                    <label>Arrival Date:</label>
+                    <input type="date" name="arrival_date" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Lead Time (days):</label>
+                    <input type="number" name="lead_time" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Meal:</label>
+                    <select name="meal" class="form-control">
+                        <option value="BB">BB</option>
+                        <option value="FB">FB</option>
+                        <option value="HB">HB</option>
+                        <option value="SC">SC</option>
+                        <option value="Undefined">Undefined</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step">
+                <div class="form-group">
+                    <label>Market Segment:</label>
+                    <select name="market_segment" class="form-control">
+                        <option value="Direct">Direct</option>
+                        <option value="Corporate">Corporate</option>
+                        <option value="Online TA">Online TA</option>
+                        <option value="Offline TA/TO">Offline TA/TO</option>
+                        <option value="Complementary">Complementary</option>
+                        <option value="Groups">Groups</option>
+                        <option value="Undefined">Undefined</option>
+                        <option value="Aviation">Aviation</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Distribution Channel:</label>
+                    <select name="distribution_channel" class="form-control">
+                        <option value="Direct">Direct</option>
+                        <option value="Corporate">Corporate</option>
+                        <option value="TA/TO">TA/TO</option>
+                        <option value="Undefined">Undefined</option>
+                        <option value="GDS">GDS</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Repeated Guest:</label>
+                    <input type="checkbox" name="is_repeated_guest" class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label>Previous Cancellations:</label>
+                    <input type="number" name="previous_cancellations" class="form-control" required>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step">
+                <div class="form-group">
+                    <label>Previous Bookings Not Canceled:</label>
+                    <input type="number" name="previous_bookings_not_canceled" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Booking Changes:</label>
+                    <input type="number" name="booking_changes" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Deposit Type:</label>
+                    <select name="deposit_type" class="form-control">
+                        <option value="No Deposit">No Deposit</option>
+                        <option value="Refundable">Refundable</option>
+                        <option value="Non Refund">Non Refund</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Days in Waiting List:</label>
+                    <input type="number" name="days_in_waiting_list" class="form-control" required>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="step">
+                <div class="form-group">
+                    <label>Customer Type:</label>
+                    <select name="customer_type" class="form-control">
+                        <option value="Transient">Transient</option>
+                        <option value="Contract">Contract</option>
+                        <option value="Transient-Party">Transient-Party</option>
+                        <option value="Group">Group</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>ADR (Average Daily Rate):</label>
+                    <input type="number" step="0.01" name="adr" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Required Car Parking Spaces:</label>
+                    <input type="number" name="required_car_parking_spaces" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Total Special Requests:</label>
+                    <input type="number" name="total_of_special_requests" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Room Mismatch:</label>
+                    <input type="checkbox" name="room_mismatch" class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label>Continent:</label>
+                    <select name="continent" class="form-control">
+                        <option value="Europe">Europe</option>
+                        <option value="North America">North America</option>
+                        <option value="Asia">Asia</option>
+                        <option value="South America">South America</option>
+                        <option value="Oceania">Oceania</option>
+                        <option value="Africa">Africa</option>
+                        <option value="Unknown">Unknown</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Total Guests:</label>
+                    <input type="number" name="total_guests" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Total Stay (Nights):</label>
+                    <input type="number" name="total_stay" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="form-navigation">
+                <button type="button" onclick="nextStep(-1)">Previous</button>
+                <button type="button" onclick="nextStep(1)">Next</button>
+                <button type="submit" style="display:none;">Get Prediction</button>
+            </div>
+
+            {% if prediction %}
+                <div class="result-container {% if 'Yes' in prediction %}danger{% else %}success{% endif %}">
+                    {{ prediction }} <br>
+                    Probability: {{ probability }}
+                </div>
+            {% endif %}
+
+            {% if recommendation_list %}
+                <div class="recommendations">
+                    <h4>Recommendations:</h4>
+                    <ul>
+                        {% for item in recommendation_list %}
+                            <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </form>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        const steps = document.querySelectorAll(".step");
+        const indicators = document.querySelectorAll(".progress-bar div");
+        
+        const nextStep = (n) => {
+            steps[currentStep].classList.remove("active");
+            indicators[currentStep].classList.remove("active");
+            currentStep = Math.min(Math.max(0, currentStep + n), steps.length - 1);
+            steps[currentStep].classList.add("active");
+            indicators[currentStep].classList.add("active");
+
+            // Show/hide buttons
+            const prevBtn = document.querySelector("button[onclick=\"nextStep(-1)\"]");
+            const nextBtn = document.querySelector("button[onclick=\"nextStep(1)\"]");
+            const submitBtn = document.querySelector("button[type='submit']");
+            
+            prevBtn.style.display = currentStep === 0 ? "none" : "inline-block";
+            nextBtn.style.display = currentStep === steps.length - 1 ? "none" : "inline-block";
+            submitBtn.style.display = currentStep === steps.length - 1 ? "inline-block" : "none";
+        }
+        
+        // Initialize button visibility
+        nextStep(0);
+    </script>
+</body>
+</html>

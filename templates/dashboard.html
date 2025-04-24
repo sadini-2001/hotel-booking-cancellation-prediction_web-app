@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #003366;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        header nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+
+        h2 {
+            color: #003366;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #003366;
+            color: white;
+        }
+
+        .summary {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+
+        .card {
+            flex: 1 1 180px;
+            background: #e6f0ff;
+            margin: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .card h3 {
+            margin: 0;
+            color: #003366;
+            font-size: 18px;
+        }
+
+        .card p {
+            margin: 5px 0 0;
+            font-size: 16px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Hotel Booking Dashboard</h1>
+    <nav>
+        <a href="{{ url_for('prediction_form') }}">Back to Prediction</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </nav>
+</header>
+
+<div class="container">
+    <h2>👋 Hello, {{ hotel_name }}!</h2>
+    <h2>📅 Monthly Cancellation Trends</h2>
+    {% if monthly_cancellations %}
+    <table>
+        <thead>
+            <tr>
+                <th>Month</th>
+                <th>Year</th>
+                <th>Total Bookings</th>
+                <th>Canceled Bookings</th>
+                <th>Cancellation Rate (%)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in monthly_cancellations %}
+            <tr>
+                <td>{{ row.month }}</td>
+                <td>{{ row.year }}</td>
+                <td>{{ row.total_bookings }}</td>
+                <td>{{ row.canceled_bookings }}</td>
+                <td>{{ "%.2f"|format(row.cancellation_rate) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>No booking data available for this year.</p>
+    {% endif %}
+
+    <h2>📊 Summary (Current Month – Non-Canceled)</h2>
+    {% if summary_stats %}
+    <div class="summary">
+        <div class="card">
+            <h3>Total Bookings</h3>
+            <p>{{ summary_stats.total_non_canceled }}</p>
+        </div>
+        <div class="card">
+            <h3>Avg Lead Time</h3>
+            <p>{{ summary_stats.avg_lead_time | round(1) }}</p>
+        </div>
+        <div class="card">
+            <h3>Avg ADR</h3>
+            <p>{{ summary_stats.avg_adr | round(2) }}</p>
+        </div>
+        <div class="card">
+            <h3>Avg Guests</h3>
+            <p>{{ summary_stats.avg_total_guests | round(1) }}</p>
+        </div>
+        <div class="card">
+            <h3>Avg Stay (Days)</h3>
+            <p>{{ summary_stats.avg_total_stay | round(1) }}</p>
+        </div>
+    </div>
+    {% else %}
+        <p>No non-canceled booking data for this month.</p>
+    {% endif %}
+</div>
+
+</body>
+</html>

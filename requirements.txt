@@ -1,0 +1,8 @@
+pandas
+scikit-learn
+matplotlib
+seaborn
+joblib
+flask
+flask_mysqldb
+mysql-connector-python
