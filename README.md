@@ -11,6 +11,10 @@ After performing an advanced exploratory analysis on hotel booking cancellations
 
 ---
 
+[![Demo of the Web application](web_app.png)](https://youtu.be/Qyq2RMNYi3M?si=1s_JJ3V2Ob22zr0W)
+
+---
+
 ## 🔍 Key Features
 
 ✅ **ML-Driven Predictions**  
