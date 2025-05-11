@@ -1,6 +1,6 @@
 # 🏨 Hotel Booking Cancellation Prediction Web App
 
-After performing an advanced exploratory analysis on hotel booking cancellations, this end-to-end machine learning web application was developed to **predict cancellations** and provide **actionable, customer-type-specific recommendations** to help reduce churn or enhance guest satisfaction.
+After performing an [advanced exploratory analysis](https://github.com/sadini-2001/hotel-booking-cancellation_advanced-data-analysis) on hotel booking cancellations, this end-to-end machine learning web application was developed to **predict cancellations** and provide **actionable, customer-type-specific recommendations** to help reduce churn or enhance guest satisfaction.
 
 ## 🚀 Tech Stack
 - **Frontend:** HTML5, CSS3 (via Jinja templates)
